@@ -8,6 +8,8 @@ public class Imple_15684 {
 	static int N, M, H;
 	static int[][] map;
 	static int result = Integer.MAX_VALUE;
+	static boolean finished;
+	static int count;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -24,21 +26,22 @@ public class Imple_15684 {
 			map[a][b] = 1;
 		}
 
-		dfs(0, 1);
-		if (result == Integer.MAX_VALUE) {
-			System.out.println("-1");
-		} else {
-			System.out.println(result);
+		for (int i = 0; i < 4; i++) {
+			if (finished)
+				break;
+			count = i;
+			dfs(0, 1);
 		}
+		System.out.println(finished ? result : -1);
 	}
 
 	private static void dfs(int depth, int row) {
-		if (depth > result || depth == 4) {
+		if (depth == count) {
+			if (move()) {
+				result = Math.min(result, depth);
+				finished = true;
+			}
 			return;
-		}
-
-		if (move()) {
-			result = Math.min(result, depth);
 		}
 
 		for (int i = row; i <= H; i++) {
