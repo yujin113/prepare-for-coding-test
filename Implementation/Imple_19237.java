@@ -114,17 +114,9 @@ public class Imple_19237 {
 					int dy = shark.y + move[direction][1];
 
 					//빈칸 먼저 탐색
-					if (dx >= 0 && dy >= 0 && dx < N && dy < N) {
-						//빈칸일 경우
-						if (map[dx][dy].smell == 0) {
-							//이동한 위치의 map 변경
-							map[dx][dy] = new Node(i, k);
-							//shark info update
-							sharks[i] = new Shark(dx, dy, direction);
-							moved[dx][dy] = true;
-							isMove = true;
-							break;
-						} else if (map[dx][dy].smell == k && backup[dx][dy].smell == 0) { //상어 fight
+					if (dx >= 0 && dy >= 0 && dx < N && dy < N && backup[dx][dy].smell == 0) {
+						// 상어가 있는 칸이라면
+						if (map[dx][dy].smell == k) {
 							int win = Math.min(map[dx][dy].shark, i);
 							if (win == i) {
 								sharks[map[dx][dy].shark] = null;
@@ -134,9 +126,14 @@ public class Imple_19237 {
 							} else {
 								sharks[i] = null;
 							}
-							isMove = true;
-							break;
+						} else {
+							// 상어 없는 빈칸이라면
+							map[dx][dy] = new Node(i, k);
+							sharks[i] = new Shark(dx, dy, direction);
+							moved[dx][dy] = true;
 						}
+						isMove = true;
+						break;
 					}
 				}
 				//빈칸 없으면 자신의 냄새가 있는 방향 탐색
