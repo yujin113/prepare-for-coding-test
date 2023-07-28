@@ -6,9 +6,8 @@ import java.io.InputStreamReader;
 
 public class Greedy_21758 {
     static int[] honey;
-    static int[][] sum;
-    static int[] arr = new int[3];
-    static boolean[] visited;
+    static int[] leftSum;
+    static int[] rightSum;
     static int result = Integer.MIN_VALUE;
 
     public static void main(String[] args) throws IOException {
@@ -21,64 +20,46 @@ public class Greedy_21758 {
             honey[i] = Integer.parseInt(line[i]);
         }
 
-        sum = new int[N][N];
-        for (int i = 0; i < N; i++) {
-            int temp = honey[i];
-            sum[i][i] = temp;
-            for (int j = i + 1; j < N; j++) {
-                temp += honey[j];
-                sum[i][j] = temp;
-                sum[j][i] = temp;
-            }
+        leftSum = new int[N];
+        rightSum = new int[N];
+
+        leftSum[0] = honey[0];
+        rightSum[N - 1] = honey[N - 1];
+
+        for (int i = 1; i < N; i++) {
+            leftSum[i] = leftSum[i - 1] + honey[i];
+        }
+        for (int i = N - 2; i >= 0; i--) {
+            rightSum[i] = rightSum[i + 1] + honey[i];
         }
 
-        visited = new boolean[N];
-        bt(0);
+        calcHoney(N);
 
         System.out.println(result);
     }
 
-    static void bt(int depth) {
-        if (depth == 3) {
-//            for (int i : arr) {
-//                System.out.print(i + " ");
-//            }
-//            System.out.println();
-            countHoney();
-            return;
+    private static void calcHoney(int N) {
+        int sum = leftSum[N - 1];
+
+        // 벌 왼쪽 끝, 벌통 오른쪽 끝
+        for (int i = 1; i < N - 1; i++) {
+            int bee1 = sum - (honey[0] + honey[i]);
+            int bee2 = sum - leftSum[i];
+            result = Math.max(result, bee1 + bee2);
         }
 
-        for (int i = 0; i < honey.length; i++) {
-            if (visited[i]) continue;
-            visited[i] = true;
-            arr[depth] = i;
-            bt(depth + 1);
-            visited[i] = false;
-        }
-    }
-
-    static void countHoney() {
-        int bee1 = sum[arr[0]][arr[2]] - honey[arr[0]];
-        int bee2 = sum[arr[1]][arr[2]] - honey[arr[1]];
-        int sum = bee1 + bee2;
-
-        if (arr[0] < arr[2] && arr[1] < arr[2]) {
-            if (arr[0] < arr[1]) {
-                sum -= honey[arr[1]];
-            } else {
-                sum -= honey[arr[0]];
-            }
-        }
-        if (arr[2] < arr[0] && arr[2] < arr[1]) {
-            if (arr[0] < arr[1]) {
-                sum -= honey[arr[0]];
-            } else {
-                sum -= honey[arr[1]];
-            }
+        // 벌통 왼쪽 끝, 벌 오른쪽 끝
+        for (int i = 1; i < N - 1; i++) {
+            int bee1 = sum - (honey[N - 1] + honey[i]);
+            int bee2 = sum - rightSum[i];
+            result = Math.max(result, bee1 + bee2);
         }
 
-//        System.out.println(sum);
-//        System.out.println();
-        result = Math.max(result, sum);
+        // 벌 양쪽 끝
+        for (int i = 1; i < N - 1; i++) {
+            int bee1 = leftSum[i] - honey[0];
+            int bee2 = rightSum[i] - honey[N - 1];
+            result = Math.max(result, bee1 + bee2);
+        }
     }
 }
